@@ -4,67 +4,24 @@
 package com.redis.customerApplication.service;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.redis.customerApplication.dao.CustomerDAO;
 import com.redis.customerApplication.pojo.Customer;
-
-
 
 /**
  * @author smangrul
  *
  */
-@Service
-public class CustomerService implements CustomerServiceImpl {
-	
-	Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
-	
-	@Autowired
-	CustomerDAO customerDAO;
 
-	@Override
-	public int createCustomer(Customer customer) {
-		// TODO Auto-generated method stub
-		Customer customers = customerDAO.save(customer);
-		return 1;
-	
-	}
+public interface CustomerService {
+	public Customer createCustomer(Customer customer);
 
-	@Override
-	public List<Customer> getCustomers() {
-		// TODO Auto-generated method stub
-		customerDAO.findAll();
-		logger.info("Done");
-		return null;
-	}
+	public List<Customer> getCustomers();
 
-	@Override
-	public int deleteCustomer(String id) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	public Optional<Customer> get(String id);
 
-	@Override
-	public int updateCustomer(Customer customer) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	public int deleteCustomer(String id);
 
-	@Override
-	public String get(String id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String findById(String id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public Customer updateCustomerById(Customer customer);
 
 }

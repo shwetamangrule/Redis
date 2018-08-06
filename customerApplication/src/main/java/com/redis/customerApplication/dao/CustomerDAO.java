@@ -15,7 +15,7 @@ import com.redis.customerApplication.pojo.Customer;
  *
  */
 public interface CustomerDAO extends JpaRepository<Customer, String> {
-	Optional<Customer> findById(String Id);
+	Optional<Customer> findById(String id);
 
 	void deleteById(String id);
 }
