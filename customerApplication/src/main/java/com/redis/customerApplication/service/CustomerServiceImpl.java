@@ -9,12 +9,11 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import com.redis.customerApplication.dao.CustomerDAO;
+import com.redis.customerApplication.exception.CachingException;
 import com.redis.customerApplication.pojo.Customer;
 
 /**
@@ -24,11 +23,25 @@ import com.redis.customerApplication.pojo.Customer;
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
+	/** ----------Log---------------. */
 	Logger logger = LoggerFactory.getLogger(CustomerService.class);
 
+	/** ------------customerDAO object-----------------. */
 	@Autowired
 	CustomerDAO customerDAO;
 
+	/** ------------environment-----------------. */
+	@Autowired
+	private Environment environment;
+
+	/**/
+	/*
+	 * crating customer with id, firstName, lastName, address, contact
+	 * 
+	 * @see
+	 * com.redis.customerApplication.service.CustomerService#createCustomer(com.
+	 * redis.customerApplication.Customer)
+	 */
 	@Override
 	public Customer createCustomer(Customer customer) {
 		// TODO Auto-generated method stub
@@ -38,39 +51,88 @@ public class CustomerServiceImpl implements CustomerService {
 
 	}
 
+	/*
+	 * showing customers
+	 * 
+	 * @see com.redis.customerApplication.service.CustomerService#getCustomers()
+	 */
 	@Override
-	public List<Customer> getCustomers() {
-		// TODO Auto-generated method stub
+	public List<Customer> getCustomers() throws CachingException {
+		logger.info("in customer service calling getCustomer");
 		List<Customer> customer = customerDAO.findAll();
-		logger.info("Done");
-		return customer;
+		if (customer.isEmpty()) {
+			throw new CachingException(environment.getProperty("200"));
+		} else {
+			logger.info("Customers Found");
+			return customer;
+		}
 	}
 
+	/*
+	 * get customer by id
+	 * 
+	 * @see
+	 * com.redis.customerApplication.service.CustomerService#getCustomer(java.lang.
+	 * String)
+	 */
 	@Override
-	@Cacheable(value = "customers", key = "#customerid")
-	public Optional<Customer> get(String customerid) {
-		// TODO Auto-generated method stub
-		logger.info("Getting user with ID {}.", customerid);
-		logger.info("from database>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		return customerDAO.findById(customerid);
+	public Customer getCustomer(String id) throws CachingException {
+		logger.info("Getting user with ID {}.", id);
+		Optional<Customer> customer = customerDAO.findById(id);
+		if (customer.isPresent()) {
+			logger.info("from database>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+			return customer.get();
+		} else {
+			throw new CachingException(environment.getProperty("200"));
+		}
 
 	}
 
+	/*
+	 * update customer by id
+	 * 
+	 * @see
+	 * com.redis.customerApplication.service.CustomerService#updateCustomerById(com.
+	 * redis.customerApplication.Customer)
+	 */
 	@Override
-	@CachePut(value = "customers", key = "#customer.id")
-	public Customer updateCustomerById(Customer customer) {
+	public Customer updateCustomerById(Customer customer) throws CachingException {
 		logger.info("updating customer with id {}");
-		Customer customerUpdate = customerDAO.save(customer);
-		return customerUpdate;
+		if (customer != null && customer.getId() != null & customer.getLastName() != null) {
+			Customer customerUpdate = customerDAO.findById(customer.getId()).get();
+			customerUpdate.setAddress(customer.getAddress());
+			customerUpdate.setContact(customer.getContact());
+			return customerDAO.save(customerUpdate);
+		} else {
+			throw new CachingException(environment.getProperty("7777"));
+		}
+
 	}
 
+	/*
+	 * delete customer by id
+	 * 
+	 * @see
+	 * com.redis.customerApplication.service.CustomerService#deleteCustomer(java
+	 * .lang.String)
+	 */
 	@Override
-	@CacheEvict(value = "customers", allEntries = true)
-	public int deleteCustomer(String id) {
+	public String deleteCustomer(String id) throws CachingException {
 		// TODO Auto-generated method stub
 		logger.info("deleting customer with id {}", id);
-		customerDAO.deleteById(id);
-		return 0;
+		if (id != null) {
+			Optional<Customer> customer = customerDAO.findById(id);
+			if (customer.isPresent()) {
+				customerDAO.deleteById(id);
+				return "Customer Deleted";
+			} else {
+				throw new CachingException(environment.getProperty("200"));
+			}
+		}
+
+		else {
+			throw new CachingException(environment.getProperty("201"));
+		}
 	}
 
 }

@@ -6,6 +6,7 @@ package com.redis.customerApplication.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.redis.customerApplication.exception.CachingException;
 import com.redis.customerApplication.pojo.Customer;
 
 /**
@@ -14,14 +15,38 @@ import com.redis.customerApplication.pojo.Customer;
  */
 
 public interface CustomerService {
+
+	/**
+	 * @param customer
+	 * @return customer
+	 */
 	public Customer createCustomer(Customer customer);
 
-	public List<Customer> getCustomers();
+	/**
+	 * @return list of customer
+	 * @throws CachingException
+	 */
+	public List<Customer> getCustomers() throws CachingException;
 
-	public Optional<Customer> get(String id);
+	/**
+	 * @param id
+	 * @return customer
+	 * @throws CachingException
+	 */
+	public Customer getCustomer(String id) throws CachingException;
 
-	public int deleteCustomer(String id);
+	/**
+	 * @param customer
+	 * @return customer
+	 * @throws CachingException
+	 */
+	public Customer updateCustomerById(Customer customer) throws CachingException;
 
-	public Customer updateCustomerById(Customer customer);
+	/**
+	 * @param id
+	 * @return String
+	 * @throws CachingException
+	 */
+	public String deleteCustomer(String id) throws CachingException;
 
 }
