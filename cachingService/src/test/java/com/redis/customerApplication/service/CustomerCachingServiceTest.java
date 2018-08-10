@@ -27,7 +27,7 @@ import com.redis.customerApplication.pojo.Customer;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-public class CustomerServiceTest {
+public class CustomerCachingServiceTest {
 
 	/**
 	 * -----environment object to get in application properties---------------.
@@ -41,10 +41,10 @@ public class CustomerServiceTest {
 
 	/** ---------------inject customer service--------. */
 	@InjectMocks
-	CustomerServiceImpl customerServiceImpl;
+	CustomerCachingServiceImpl customerCachingServiceImpl;
 
 	@Test
-	public void testGet() throws CachingException {
+	public void testGetCustomer() throws CachingException {
 
 		Customer customer = new Customer();
 		customer.setId("1");
@@ -55,7 +55,7 @@ public class CustomerServiceTest {
 		// when(customerDAO.save(customer)).thenReturn(customer);
 		// Customer customer2 = new Customer();
 		when(customerDAO.findById("1")).thenReturn(customerOpt);
-		assertEquals(customer, customerServiceImpl.getCustomer("1"));
+		assertEquals(customer, customerCachingServiceImpl.getCustomer("1"));
 	}
 
 	@Test
@@ -72,7 +72,7 @@ public class CustomerServiceTest {
 		customer2.setContact("876534");
 		customer2.setAddress("address");
 		when(customerDAO.save(customer2)).thenReturn(customer2);
-		assertEquals(customer2, customerServiceImpl.updateCustomerById(customer2));
+		assertEquals(customer2, customerCachingServiceImpl.updateCustomerById(customer2));
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class CustomerServiceTest {
 		// Customer customer2 = new Customer();
 		when(customerDAO.findById("1")).thenReturn(customerOpt);
 		doNothing().when(customerDAO).deleteById(customerOpt.get().getId());
-		assertEquals("Customer Deleted", customerServiceImpl.deleteCustomer("1"));
+		assertEquals("Customer Deleted", customerCachingServiceImpl.deleteCustomer("1"));
 
 	}
 }

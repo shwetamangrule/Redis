@@ -14,20 +14,9 @@ import com.redis.customerApplication.pojo.Customer;
  *
  */
 
-public interface CustomerService {
+public interface CustomerCachingService {
 
-	/**
-	 * @param customer
-	 * @return customer
-	 */
-	public Customer createCustomer(Customer customer);
-
-	/**
-	 * @return list of customer
-	 * @throws CachingException
-	 */
-	public List<Customer> getCustomers() throws CachingException;
-
+	
 	/**
 	 * @param id
 	 * @return customer

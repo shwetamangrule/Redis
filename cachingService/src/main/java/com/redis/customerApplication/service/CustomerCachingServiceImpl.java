@@ -21,10 +21,10 @@ import com.redis.customerApplication.pojo.Customer;
  *
  */
 @Service
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerCachingServiceImpl implements CustomerCachingService {
 
 	/** ----------Log---------------. */
-	Logger logger = LoggerFactory.getLogger(CustomerService.class);
+	Logger logger = LoggerFactory.getLogger(CustomerCachingService.class);
 
 	/** ------------customerDAO object-----------------. */
 	@Autowired
@@ -34,50 +34,17 @@ public class CustomerServiceImpl implements CustomerService {
 	@Autowired
 	private Environment environment;
 
-	/**/
-	/*
-	 * crating customer with id, firstName, lastName, address, contact
-	 * 
-	 * @see
-	 * com.redis.customerApplication.service.CustomerService#createCustomer(com.
-	 * redis.customerApplication.Customer)
-	 */
-	@Override
-	public Customer createCustomer(Customer customer) {
-		// TODO Auto-generated method stub
-		Customer customers = customerDAO.save(customer);
-		// logger.info(customer.getId());
-		return customers;
-
-	}
-
-	/*
-	 * showing customers
-	 * 
-	 * @see com.redis.customerApplication.service.CustomerService#getCustomers()
-	 */
-	@Override
-	public List<Customer> getCustomers() throws CachingException {
-		logger.info("in customer service calling getCustomer");
-		List<Customer> customer = customerDAO.findAll();
-		if (customer.isEmpty()) {
-			throw new CachingException(environment.getProperty("200"));
-		} else {
-			logger.info("Customers Found");
-			return customer;
-		}
-	}
-
+	
 	/*
 	 * get customer by id
 	 * 
 	 * @see
-	 * com.redis.customerApplication.service.CustomerService#getCustomer(java.lang.
+	 * com.redis.customerApplication.service.CustomerCachingService#getCustomer(java.lang.
 	 * String)
 	 */
 	@Override
 	public Customer getCustomer(String id) throws CachingException {
-		logger.info("Getting user with ID {}.", id);
+		logger.info("Getting customer with ID {}.", id);
 		Optional<Customer> customer = customerDAO.findById(id);
 		if (customer.isPresent()) {
 			logger.info("from database>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -92,7 +59,7 @@ public class CustomerServiceImpl implements CustomerService {
 	 * update customer by id
 	 * 
 	 * @see
-	 * com.redis.customerApplication.service.CustomerService#updateCustomerById(com.
+	 * com.redis.customerApplication.service.CustomerCachingService#updateCustomerById(com.
 	 * redis.customerApplication.Customer)
 	 */
 	@Override
@@ -113,7 +80,7 @@ public class CustomerServiceImpl implements CustomerService {
 	 * delete customer by id
 	 * 
 	 * @see
-	 * com.redis.customerApplication.service.CustomerService#deleteCustomer(java
+	 * com.redis.customerApplication.service.CustomerCachingService#deleteCustomer(java
 	 * .lang.String)
 	 */
 	@Override
